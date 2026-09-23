@@ -1,5 +1,8 @@
 packages:
   - '.'
+
+public-hoist-pattern:
+  - '*types*'
 allowBuilds:
   '@google/genai': true
   '@prisma/engines': true
