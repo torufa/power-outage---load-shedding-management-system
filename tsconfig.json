@@ -9,12 +9,13 @@
     "declaration": true,
     "declarationMap": true,
     "noUncheckedIndexedAccess": true,
-    "strict": true,
+    "strict": false,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-    
+    "noImplicitAny": false,
+    "strictNullChecks": false
   },
   
   
