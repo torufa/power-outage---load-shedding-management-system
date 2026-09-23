@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch server.ts",
-    "build": "prisma generate && tsc",
+    "build": "tsc",
+    "postinstall": "prisma generate",
     "start": "tsx server.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
