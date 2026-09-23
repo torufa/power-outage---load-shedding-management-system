@@ -1,0 +1,6 @@
+{
+  "name": "GridPulse - Power Outage & Load Shedding Management System",
+  "description": "Enterprise Load Shedding & Power Outage Management System featuring real-time grid monitoring, automated load shedding schedules, outage reporting, technician dispatches, Redis OTP caching, JWT role-based access control, and Stripe payment processing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

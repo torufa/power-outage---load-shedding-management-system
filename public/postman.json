@@ -1,0 +1,1168 @@
+{
+  "info": {
+    "_postman_id": "e4692d6b-7626-4bde-a4f8-ef3c7efdfeb1",
+    "name": "Power Outage & Load Shedding Management System (B7A6 Serial #3)",
+    "description": "Complete RESTful API collection for B7A6 Assignment (Serial Number 3: Load Shedding & Power Outage Management System). Includes Auth, OTP via Redis, GCP Social Login, 3 Roles (Customer, Technician, Admin), Zone/Feeder Management, Outage Lifecycle, Automated Load Shedding, Stripe Payments, and Audit Logs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56346399"
+  },
+  "item": [
+    {
+      "name": "1. Authentication & Security",
+      "item": [
+        {
+          "name": "POST Register User (Initiate OTP)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test 1\",\n  \"email\": \"academicvarsity@gmail.com\",\n  \"password\": \"SecurePass@123\",\n  \"role\": \"CUSTOMER\",\n  \"phone\": \"+8801999887766\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Verify OTP (Redis Caching)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"academicvarsity@gmail.com\",\n  \"otp\": \"467882\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/verify-otp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "verify-otp"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Login (Email/Password)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@gridpulse.gov\",\n  \"password\": \"Admin@123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST GCP Social Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"torufa3@gmail.com\",\n  \"name\": \"test 2\",\n  \"googleId\": \"eyJhbGciOiJSUzI1NiIsImtpZCI6ImYxMGY4NzQwNWE5NzljMWRmMzZkZjI2NjA2NzM0ZjMzY2Q4NWMyNzEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIyODUyMTEwNDQ3NDMtMTQ0b3BscHYxZ243OWRrb3NxMGoxcWI1ZmdzcDQydjYuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIyODUyMTEwNDQ3NDMtMTQ0b3BscHYxZ243OWRrb3NxMGoxcWI1ZmdzcDQydjYuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDY5MjI1OTYxMDA0MDc5MTA1NzMiLCJlbWFpbCI6InRvcnVmYTNAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5iZiI6MTc5MDE1Nzg4OSwibmFtZSI6IlRvcnVmYSBUb21hIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0lMelRYMlJCeE9vaWI0ZDU3SzNUZ0pDeVhjSF9LcWxkZjVrZm1iRktOX1VzU0VfeUt1PXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6IlRvcnVmYSIsImZhbWlseV9uYW1lIjoiVG9tYSIsImlhdCI6MTc5MDE1ODE4OSwiZXhwIjoxNzkwMTYxNzg5LCJqdGkiOiJmYmIxOTFjNGMyYjdmNGJmNTQ2MzhkNjZiYjdiMmU1OWJlYjA5MTJkIn0.PQMH5Y6Izi9x_SO1Z75B9o4TCi6T8f9WXaapMLT1S4X1NOjZOqB6pF3o2L2H3_ngzlI7G0EagZNcC8yD0hF-gNGn2jr6vVJdyR-t6FX1YrtlU1VH1p3YezJkkpny6CAuiNs7SWO06SoiPHK8QqhNfXlultDdA3JjoUmmHLLaPkit_DG_cgEGCgMiKmcEKtCIaIxBV_iA_6P0kNJk-qRlNomJ1gxuWZ3wykilwXMUl9ofh_ZbC3KYuk9DqqEy1MLbmWuhINPWeKTAJeVLVOMkFHTM7kBChagHh3yZxp5GwFJdn0u4RiV5je36hjd3Cwmh2XWL6hptDXPZmfEKMOu-DQ\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/google-login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "google-login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh-token",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh-token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. User & Profile Management",
+      "item": [
+        {
+          "name": "GET My Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH Update Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"test 1\",\n  \"phone\": \"+8801711002299\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Available Technicians (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/technicians",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "technicians"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET All Users (Admin with Pagination)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users?page=1&limit=10&role=TECHNICIAN",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "role",
+                  "value": "TECHNICIAN"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Power Grid Hierarchy (Zones & Feeders)",
+      "item": [
+        {
+          "name": "GET Distribution Zones & Grid Tree",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/zones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "zones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create Distribution Zone (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Eastern Suburb & Airport Grid\",\n  \"code\": \"ZONE-EAST-03\",\n  \"region\": \"East Dhaka\",\n  \"maxCapacityMW\": 550,\n  \"currentLoadMW\": 320\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/zones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "zones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create Substation (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Uttara Sector 11 Substation\",\n  \"code\": \"SUB-UTR-02\",\n  \"zoneId\": \"dcb41fe0-54f6-46fb-9b79-e2923e1ebca5\",\n  \"capacityMVA\": 80\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/zones/substations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "zones",
+                "substations"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create Feeder (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Uttara Commercial Center Feeders\",\n  \"code\": \"FDR-UTR-COM-05\",\n  \"substationId\": \"e4aac4c3-76f5-4727-8840-684161ff9408\",\n  \"currentDemandMW\": 16.6,\n  \"maxLimitMW\": 22.2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/zones/feeders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "zones",
+                "feeders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Feeder Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/zones/feeders/e7676ff4-7cc8-4da6-a129-fa0bca7ff4fa",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "zones",
+                "feeders",
+                "e7676ff4-7cc8-4da6-a129-fa0bca7ff4fa"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH Feeder Status (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"LOAD_SHEDDING\",\n  \"reason\": \"Peak load reduction protocol\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/zones/feeders/e7676ff4-7cc8-4da6-a129-fa0bca7ff4fa/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "zones",
+                "feeders",
+                "e7676ff4-7cc8-4da6-a129-fa0bca7ff4fa",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Load Shedding & Automated Scheduling",
+      "item": [
+        {
+          "name": "GET Load Shedding Schedules (Filtered)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/schedules?page=1&limit=10&status=SCHEDULED",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "schedules"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "SCHEDULED"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET My Area Schedule (Customer)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/schedules/my-area",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "schedules",
+                "my-area"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create Schedule (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Evening Peak Shedding Slot B\",\n  \"feederId\": \"e7676ff4-7cc8-4da6-a129-fa0bca7ff4fa\",\n  \"startTime\": \"2026-09-23T18:00:00Z\",\n  \"endTime\": \"2026-09-23T19:30:00Z\",\n  \"targetDeficitMW\": 12.0,\n  \"recurringDays\": [\"SATURDAY\", \"MONDAY\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/schedules",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "schedules"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Generate Automated Load Shedding (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gridDeficitMW\": 25.0,\n  \"durationHours\": 2,\n  \"reason\": \"National gas pipeline pressure drop\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/schedules/generate-automated",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "schedules",
+                "generate-automated"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH Update Schedule Status (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"COMPLETED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/schedules/sched-01/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "schedules",
+                "sched-01",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Outage Reports & Technician Dispatches",
+      "item": [
+        {
+          "name": "POST Report Outage (Customer/Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Sparks from Transformer & Blackout\",\n  \"description\": \"Transformer on Pole 42 sparking and made a loud boom sound.\",\n  \"feederId\": \"fdr-01\",\n  \"areaId\": \"area-01\",\n  \"outageType\": \"TRANSFORMER_FAILURE\",\n  \"severity\": \"HIGH\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/outages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "outages"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET All Outages (Search & Filter)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/outages?page=1&limit=10&status=REPAIR_IN_PROGRESS",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "outages"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "REPAIR_IN_PROGRESS"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Outage Details & Timeline",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/outages/outage-01",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "outages",
+                "outage-01"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET My Assigned Outages (Technician)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{techToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/outages/my-assigned",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "outages",
+                "my-assigned"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Assign Technician (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"technicianId\": \"user-tech-01\",\n  \"estimatedRestorationHours\": 2,\n  \"dispatchNotes\": \"Dispatch heavy duty crane truck and test bushings\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/outages/outage-02/assign",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "outages",
+                "outage-02",
+                "assign"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH Update Outage Lifecycle Status (Technician/Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{techToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"RESTORED\",\n  \"resolutionNotes\": \"Replaced blown 200A fuse and insulated transformer lead\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/outages/outage-01/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "outages",
+                "outage-01",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE Outage (Soft Delete - Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/outages/outage-02",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "outages",
+                "outage-02"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Stripe Payment Processing",
+      "item": [
+        {
+          "name": "POST Create Stripe Checkout Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 65.00,\n  \"purpose\": \"BILL_PAYMENT\",\n  \"invoiceOrTicketNumber\": \"TKT-2026-60337035\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/create-checkout-session",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "create-checkout-session"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Verify Stripe Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sessionId\": \"cs_test_a1lJ88q84vfRjTphbvzwuLyhrvhghhiaE2CpxpE7mNBwjUquPMT7p6MFZh\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/verify",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "verify"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET My Payments History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/my-payments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "my-payments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET All Payments (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "7. Admin Analytics & Audit Logs",
+      "item": [
+        {
+          "name": "GET Admin Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/dashboard-stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "dashboard-stats"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET System Audit Logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/audit-logs?page=1&limit=15",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "audit-logs"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "15"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH Update User Role",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"TECHNICIAN\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/users/user-cust-01/role",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users",
+                "user-cust-01",
+                "role"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "adminToken",
+      "value": ""
+    },
+    {
+      "key": "techToken",
+      "value": ""
+    }
+  ]
+}

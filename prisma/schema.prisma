@@ -1,0 +1,300 @@
+// GridPulse - Power Outage & Load Shedding Management System
+// Prisma Schema Definition for PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CUSTOMER
+  TECHNICIAN
+  ADMIN
+}
+
+enum FeederStatus {
+  ACTIVE
+  LOAD_SHEDDING
+  TRIPPED
+  MAINTENANCE
+}
+
+enum AreaPriority {
+  NORMAL
+  HIGH
+  CRITICAL_HOSPITAL
+}
+
+enum ScheduleStatus {
+  SCHEDULED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum OutageType {
+  UNPLANNED
+  FEEDER_TRIP
+  TRANSFORMER_FAILURE
+  CABLE_FAULT
+  SCHEDULED_SHED
+}
+
+enum OutageSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  EMERGENCY
+}
+
+enum OutageStatus {
+  REPORTED
+  VERIFIED
+  TECHNICIAN_ASSIGNED
+  EN_ROUTE
+  REPAIR_IN_PROGRESS
+  RESTORED
+  CANCELLED
+}
+
+enum PaymentPurpose {
+  BILL_PAYMENT
+  PRIORITY_RECONNECTION
+  MAINTENANCE_FEE
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id               String           @id @default(uuid())
+  email            String           @unique
+  password         String
+  name             String
+  phone            String?
+  role             Role             @default(CUSTOMER)
+  isVerified       Boolean          @default(false)
+  areaId           String?
+  avatarUrl        String?
+  googleId         String?          @unique
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  deletedAt        DateTime?
+
+  // Relations
+  area             Area?            @relation(fields: [areaId], references: [id])
+  reportedOutages  OutageReport[]   @relation("ReportedByUser")
+  assignedOutages  OutageReport[]   @relation("AssignedToTechnician")
+  payments         Payment[]
+  auditLogs        AuditLog[]
+  timelineEntries  OutageTimeline[]
+
+  @@index([email])
+  @@index([role])
+  @@index([areaId])
+  @@map("users")
+}
+
+model DistributionZone {
+  id            String        @id @default(uuid())
+  name          String
+  code          String        @unique
+  region        String
+  maxCapacityMW Float         @default(500.0)
+  currentLoadMW Float         @default(320.0)
+  isDeleted     Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relations
+  substations   Substation[]
+
+  @@index([code])
+  @@map("distribution_zones")
+}
+
+model Substation {
+  id            String            @id @default(uuid())
+  name          String
+  code          String            @unique
+  zoneId        String
+  capacityMVA   Float             @default(100.0)
+  status        String            @default("OPERATIONAL")
+  isDeleted     Boolean           @default(false)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  // Relations
+  zone          DistributionZone  @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  feeders       Feeder[]
+
+  @@index([zoneId])
+  @@index([code])
+  @@map("substations")
+}
+
+model Feeder {
+  id              String                  @id @default(uuid())
+  name            String
+  code            String                  @unique
+  substationId    String
+  currentDemandMW Float                   @default(12.5)
+  maxLimitMW      Float                   @default(25.0)
+  status          FeederStatus            @default(ACTIVE)
+  isDeleted       Boolean                 @default(false)
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  // Relations
+  substation      Substation              @relation(fields: [substationId], references: [id], onDelete: Cascade)
+  areas           Area[]
+  schedules       LoadSheddingSchedule[]
+  outages         OutageReport[]
+
+  @@index([substationId])
+  @@index([code])
+  @@index([status])
+  @@map("feeders")
+}
+
+model Area {
+  id          String        @id @default(uuid())
+  name        String
+  postalCode  String
+  feederId    String
+  population  Int           @default(15000)
+  priority    AreaPriority  @default(NORMAL)
+  isDeleted   Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  feeder      Feeder        @relation(fields: [feederId], references: [id], onDelete: Cascade)
+  users       User[]
+  outages     OutageReport[]
+
+  @@index([feederId])
+  @@map("areas")
+}
+
+model LoadSheddingSchedule {
+  id              String          @id @default(uuid())
+  title           String
+  feederId        String
+  startTime       DateTime
+  endTime         DateTime
+  targetDeficitMW Float           @default(5.0)
+  status          ScheduleStatus  @default(SCHEDULED)
+  recurringDays   String[]        @default([])
+  isDeleted       Boolean         @default(false)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  // Relations
+  feeder          Feeder          @relation(fields: [feederId], references: [id], onDelete: Cascade)
+
+  @@index([feederId])
+  @@index([startTime, endTime])
+  @@index([status])
+  @@map("load_shedding_schedules")
+}
+
+model OutageReport {
+  id                    String            @id @default(uuid())
+  ticketNumber          String            @unique
+  title                 String
+  description           String
+  feederId              String
+  areaId                String
+  reportedById          String
+  assignedTechnicianId  String?
+  outageType            OutageType        @default(UNPLANNED)
+  severity              OutageSeverity    @default(MEDIUM)
+  status                OutageStatus      @default(REPORTED)
+  photoUrl              String?
+  estimatedRestoration  DateTime?
+  restoredAt            DateTime?
+  resolutionNotes       String?
+  isDeleted             Boolean           @default(false)
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  // Relations
+  feeder                Feeder            @relation(fields: [feederId], references: [id])
+  area                  Area              @relation(fields: [areaId], references: [id])
+  reportedBy            User              @relation("ReportedByUser", fields: [reportedById], references: [id])
+  assignedTechnician    User?             @relation("AssignedToTechnician", fields: [assignedTechnicianId], references: [id])
+  timeline              OutageTimeline[]
+
+  @@index([ticketNumber])
+  @@index([status])
+  @@index([feederId])
+  @@index([areaId])
+  @@index([assignedTechnicianId])
+  @@map("outage_reports")
+}
+
+model OutageTimeline {
+  id          String        @id @default(uuid())
+  outageId    String
+  status      OutageStatus
+  notes       String?
+  updatedById String
+  createdAt   DateTime      @default(now())
+
+  // Relations
+  outage      OutageReport  @relation(fields: [outageId], references: [id], onDelete: Cascade)
+  updatedBy   User          @relation(fields: [updatedById], references: [id])
+
+  @@index([outageId])
+  @@map("outage_timelines")
+}
+
+model Payment {
+  id               String          @id @default(uuid())
+  transactionId    String          @unique
+  stripeSessionId  String?         @unique
+  userId           String
+  amount           Float
+  currency         String          @default("usd")
+  purpose          PaymentPurpose  @default(BILL_PAYMENT)
+  status           PaymentStatus   @default(PENDING)
+  metadata         Json?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  // Relations
+  user             User            @relation(fields: [userId], references: [id])
+
+  @@index([transactionId])
+  @@index([userId])
+  @@index([status])
+  @@map("payments")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  userEmail String?
+  action    String
+  entity    String
+  entityId  String?
+  details   Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@map("audit_logs")
+}
