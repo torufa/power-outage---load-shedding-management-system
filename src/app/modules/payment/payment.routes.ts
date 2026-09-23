@@ -35,4 +35,4 @@ router.get(
 // Admin view all payments
 router.get('/', auth('ADMIN'), PaymentController.getAllPayments);
 
-export const PaymentRoutes = router;
+export const PaymentRoutes:Router = router;

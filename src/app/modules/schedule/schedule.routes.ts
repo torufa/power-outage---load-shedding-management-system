@@ -38,4 +38,4 @@ router.patch(
   ScheduleController.updateScheduleStatus,
 );
 
-export const ScheduleRoutes = router;
+export const ScheduleRoutes:Router = router;

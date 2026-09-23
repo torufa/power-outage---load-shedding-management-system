@@ -43,4 +43,4 @@ router.patch(
 // Soft delete outage (ADMIN only)
 router.delete('/:id', auth('ADMIN'), OutageController.softDeleteOutage);
 
-export const OutageRoutes = router;
+export const OutageRoutes:Router = router;

@@ -1,18 +1,18 @@
 {
-  "name": "react-example",
-  "private": true,
+  "name": "Load Shedding & Power Management",
   "version": "0.0.0",
+  "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "tsx server.ts",
-    "start": "node server.ts",
-    "build": "prisma generate && vite build",
-    "preview": "vite preview",
+    "dev": "tsx watch server.ts",
+    "build": "prisma migrate deploy && prisma generate",
+    "start": "tsx server.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "lint": "tsc --noEmit",
     "lint:biome": "biome check src",
-    "format": "biome format src --write"
+    "format": "biome format src --write",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

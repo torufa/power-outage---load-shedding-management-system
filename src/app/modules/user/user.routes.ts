@@ -22,4 +22,4 @@ router.get('/technicians', auth('ADMIN'), UserController.getAvailableTechnicians
 // List all users with pagination and filtering (ADMIN role only)
 router.get('/', auth('ADMIN'), UserController.getAllUsers);
 
-export const UserRoutes = router;
+export const UserRoutes:Router = router;

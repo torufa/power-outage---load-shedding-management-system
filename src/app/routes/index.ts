@@ -36,4 +36,4 @@ router.get('/health', (req, res) => {
   });
 });
 
-export const AppRoutes = router;
+export const AppRoutes:Router = router;

@@ -39,4 +39,4 @@ router.patch(
   ZoneController.updateFeederStatus,
 );
 
-export const ZoneRoutes = router;
+export const ZoneRoutes:Router = router;

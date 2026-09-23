@@ -33,4 +33,4 @@ router.post(
 
 router.post('/logout', AuthController.logout);
 
-export const AuthRoutes = router;
+export const AuthRoutes:Router = router;

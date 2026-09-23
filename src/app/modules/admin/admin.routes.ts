@@ -18,4 +18,4 @@ router.patch(
   AdminController.updateUserRole,
 );
 
-export const AdminRoutes = router;
+export const AdminRoutes:Router = router;
